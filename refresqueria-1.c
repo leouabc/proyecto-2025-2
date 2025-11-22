@@ -17,23 +17,26 @@ typedef struct {
 } producto;
 
 // Prototipos de funciones
-int altas(producto Registro[100], int co);
-/*int bajas();
+int altas(producto Registro, int co);
+/*int bajas(); */
 void consultas();
-int modificaciones();*/
+//void conclas(producto Registro, int co);
+void ordenar(producto Registro, int co);
+//int modificaciones();
 
 // Menu principal
 int main() {
-    producto Registro[100];
+    producto Registro;
     int co = 0;
     int opcion;
     do {
         printf("\nMenu\n");
         printf("1. Altas\n");
         printf("2. Bajas\n");
-        printf("3. Consultas\n");
-        printf("4. Modificaciones\n");
-        printf("5. Salir\n");
+        printf("3. Consulta ordenada\n");
+        printf("4: Consulta por clasificacion\n");
+        printf("5. Modificaciones\n");
+        printf("6. Salir\n");
         printf("Ingrese una opcion: ");
         scanf("%d", &opcion);
         switch (opcion) {
@@ -42,24 +45,27 @@ int main() {
                 break;
             /*case 2:
                 bajas();
-                break;
-            case 3:
-                consultas();
-                break;
-            case 4:
-                modificaciones();
-                break;
-            case 5:
                 break; */
+            case 3: 
+                ordenar(Registro, co); consultas(Registro, co);
+                break;
+           // case 4:
+            //    conclas(Registro, co);
+            //    break;
+            //case 5:
+            //    modificaciones();
+           //     break;
+            case 6:
+                break;
             default:
                 printf("Opcion invalida\n");
         }
-    } while (opcion != 5);
+    } while (opcion != 6);
     return 0;
 }
 
 // Funciones
-int altas(producto Registro[100], int co) {
+int altas(producto Registro, int co) {
     FILE *binario;
     int opc, opc2, opc3;
     char opc4[50];
@@ -82,7 +88,7 @@ int altas(producto Registro[100], int co) {
         else if (selection == 3) {
             strcpy(opc4, "Agua");
         }
-        strcpy(Registro[co].clase, opc4);
+        strcpy(Registro.clase, opc4);
         //En case de ser tal cosa, hacer:
         switch (selection) {
             case 1:
@@ -94,55 +100,55 @@ int altas(producto Registro[100], int co) {
                     case 2:
                         while(getchar() != '\n');
                         puts("Ingresa el sabor: ");
-                        gets(Registro[co].key.sabor);
+                        gets(Registro.key.sabor);
                         break;
                     case 1:
                         puts("1: Fresa, 2: Chocolate, 3: Vainilla"); //Agregar mas
                         scanf("%d", &opc3);
                         switch (opc3) {
                             case 1:
-                                strcpy(Registro[co].key.sabor, "Fresa");
+                                strcpy(Registro.key.sabor, "Fresa");
                                 break;
                             case 2:
-                                strcpy(Registro[co].key.sabor, "Chocolate");
+                                strcpy(Registro.key.sabor, "Chocolate");
                                 break;
                             case 3:
-                                strcpy(Registro[co].key.sabor, "Vainilla");
+                                strcpy(Registro.key.sabor, "Vainilla");
                                 break;
                         }
                         break;
                 }
                 fflush(stdin);
                 puts("Ingrese el precio que se le dara: ");
-                scanf("%d", &Registro[co].key.precio);
+                scanf("%d", &Registro.key.precio);
                 break;
             case 2:
                 while(getchar() != '\n');
                 puts("Ingrese el sabor de la nieve manualmente: ");
-                gets(Registro[co].key.sabor);
+                gets(Registro.key.sabor);
                 puts("Ingrese el topping deseado: ");
                 fflush(stdin);
-                gets(Registro[co].key.topping);
+                gets(Registro.key.topping);
                 puts("Ingrese el tipo de cono deseado: ");
                 fflush(stdin);
-                gets(Registro[co].key.cono);
+                gets(Registro.key.cono);
                 puts("");
                 puts("Ingrese el precio que se le dara: ");
-                scanf("%d", &Registro[co].key.precio);
+                scanf("%d", &Registro.key.precio);
                 break;
             case 3:
                 while(getchar() != '\n');
                 puts("Ingrese el sabor de la agua manualmente: ");
-                gets(Registro[co].key.sabor);
+                gets(Registro.key.sabor);
                 puts("Ingrese el tamaño deseado: ");
                 fflush(stdin);
-                gets(Registro[co].key.tamano);
+                gets(Registro.key.tamano);
                 puts("Ingrese el precio que se le dara: ");
-                scanf("%d", &Registro[co].key.precio);
+                scanf("%d", &Registro.key.precio);
                 break;
             
         }
-        fwrite(&Registro[co], sizeof(producto), 1, binario);
+        fwrite(&Registro, sizeof(producto), 1, binario);
         co++;
         printf("\nGuardado exitoso\n");
         puts("Quieres ingresar otro articulo?");
@@ -151,4 +157,74 @@ int altas(producto Registro[100], int co) {
     } while(opc != 2);
     fclose(binario);
     return co;
+}
+
+void ordenar(producto Registro, int co) {
+    FILE *binario;
+    producto e, e2, aux;
+    binario = fopen("datos.dat", "rb+");
+    int x,y,n;
+
+    if (binario == NULL) {
+        printf("Error al abrir el archivo\n");
+        return;
+    }
+    else {
+        //Esto calcula cuantos registros hay
+        fseek(binario, 0, SEEK_END);
+        n = ftell(binario) / sizeof(producto);
+        rewind(binario);
+
+        //Ordenacion burbuja
+        for (x = 0; x<n; x++) {
+            for (y = 0; y<n; y++) {
+                //
+                fseek(binario, y*sizeof(producto), 0);
+                fread(&e, sizeof(producto), 1, binario);
+                fseek(binario, (y+1)*sizeof(producto), 0);
+                fread(&e2, sizeof(producto), 1, binario);
+                if (strcmp(e.clase, e2.clase) > 0) {
+                    aux = e;
+                    e = e2;
+                    e2 = aux;
+
+                    fseek(binario, y*sizeof(producto), 0);
+                    fwrite(&e, sizeof(producto), 1, binario);
+                    fseek(binario, (y+1)*sizeof(producto), 0);
+                    fwrite(&e2, sizeof(producto), 1, binario);
+                }
+            }    
+        }
+        fclose(binario);
+    }
+}
+
+void consultas(producto Registro[100], int co) {
+    FILE *binario; producto e;
+    binario = (fopen("datos.dat", "rb"));
+    if (binario == NULL) {
+        printf("Error al abrir el archivo\n");
+        return;
+    }
+    else {
+        while (fread(&e, sizeof(producto), 1, binario)>0) {
+            printf("Tipo: %s\n", e.clase);
+            if (strcmp(e.clase, "Paleta") == 0) {
+                printf("Sabor: %s\n", e.key.sabor);
+                printf("Precio: %d\n", e.key.precio);
+            }
+            else if (strcmp(e.clase, "Nieve") == 0) {
+                printf("Sabor: %s\n", e.key.sabor);
+                printf("Topping: %s\n", e.key.topping);
+                printf("Cono: %s\n", e.key.cono);
+                printf("Precio: %d\n", e.key.precio);
+            }
+            else if (strcmp(e.clase, "Agua") == 0) {
+                printf("Sabor: %s\n", e.key.sabor);
+                printf("Tamaño: %s\n", e.key.tamano);
+                printf("Precio: %d\n", e.key.precio);
+            }
+        }
+        fclose(binario);
+    }
 }
