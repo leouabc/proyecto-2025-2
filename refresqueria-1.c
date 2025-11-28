@@ -18,49 +18,52 @@ typedef struct {
 
 // Prototipos de funciones
 int altas(producto Registro, int co);
-/*int bajas(); */
-void consultas();
-//void conclas(producto Registro, int co);
+void consultas(producto Registro, int co);
+void conclas(producto Registro, int co);
 void ordenar(producto Registro, int co);
-//int modificaciones();
-
+//int ventafac(producto Registro, int co);
+//void consfact(producto Registro, int co);
+//int cancelar(producto Registro, int co);
 // Menu principal
 int main() {
+    system("color 9F");
     producto Registro;
     int co = 0;
     int opcion;
     do {
         printf("\nMenu\n");
         printf("1. Altas\n");
-        printf("2. Bajas\n");
-        printf("3. Consulta ordenada\n");
-        printf("4: Consulta por clasificacion\n");
-        printf("5. Modificaciones\n");
-        printf("6. Salir\n");
+        printf("2. Consulta ordenada\n");
+        printf("3: Consulta por clasificacion\n");
+        printf("4: Venta y generacion de factura\n");
+        printf("5: Consulta de facturas\n");
+        printf("6: Cancelar factura\n");
+        printf("0: Salir\n");
         printf("Ingrese una opcion: ");
         scanf("%d", &opcion);
         switch (opcion) {
             case 1:
                 co = altas(Registro, co);
                 break;
-            /*case 2:
-                bajas();
-                break; */
-            case 3: 
+            case 2: 
                 ordenar(Registro, co); consultas(Registro, co);
                 break;
-           // case 4:
-            //    conclas(Registro, co);
-            //    break;
-            //case 5:
-            //    modificaciones();
-           //     break;
+            case 3:
+                conclas(Registro, co);
+                break;
+            /*case 4:
+                ventafac(Registro, co);
+                break;
+            case 5:
+                consfact(Registro, co);
+                break;
             case 6:
+                cancelar(Registro, co);
                 break;
             default:
-                printf("Opcion invalida\n");
+                printf("Opcion invalida\n");*/
         }
-    } while (opcion != 6);
+    } while (opcion != 0);
     return 0;
 }
 
@@ -183,6 +186,18 @@ void ordenar(producto Registro, int co) {
                 fread(&e, sizeof(producto), 1, binario);
                 fseek(binario, (y+1)*sizeof(producto), 0);
                 fread(&e2, sizeof(producto), 1, binario);
+                //Ordena por nombre de sabor
+                if (strcmp(e.key.sabor, e2.key.sabor) > 0) {
+                    aux = e;
+                    e = e2;
+                    e2 = aux;
+
+                    fseek(binario, y*sizeof(producto), 0);
+                    fwrite(&e, sizeof(producto), 1, binario);
+                    fseek(binario, (y+1)*sizeof(producto), 0);
+                    fwrite(&e2, sizeof(producto), 1, binario);
+                }
+                //Ordena por tipo
                 if (strcmp(e.clase, e2.clase) > 0) {
                     aux = e;
                     e = e2;
@@ -199,7 +214,7 @@ void ordenar(producto Registro, int co) {
     }
 }
 
-void consultas(producto Registro[100], int co) {
+void consultas(producto Registro, int co) {
     FILE *binario; producto e;
     binario = (fopen("datos.dat", "rb"));
     if (binario == NULL) {
@@ -227,4 +242,8 @@ void consultas(producto Registro[100], int co) {
         }
         fclose(binario);
     }
+}
+
+void conclas(producto Registro, int co) {
+    
 }
