@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <locale.h>
 
 // Borrador de estructuras
 
@@ -26,6 +27,7 @@ void ordenar(producto Registro, int co);
 //int cancelar(producto Registro, int co);
 // Menu principal
 int main() {
+    setlocale(LC_ALL, "");
     system("color 9F");
     producto Registro;
     int co = 0;
@@ -49,7 +51,7 @@ int main() {
                 ordenar(Registro, co); consultas(Registro, co);
                 break;
             case 3:
-                conclas(Registro, co);
+                ordenar(Registro, co); conclas(Registro, co);
                 break;
             /*case 4:
                 ventafac(Registro, co);
@@ -222,6 +224,7 @@ void consultas(producto Registro, int co) {
         return;
     }
     else {
+        puts("****************************************");
         while (fread(&e, sizeof(producto), 1, binario)>0) {
             printf("Tipo: %s\n", e.clase);
             if (strcmp(e.clase, "Paleta") == 0) {
@@ -239,11 +242,65 @@ void consultas(producto Registro, int co) {
                 printf("Tamaño: %s\n", e.key.tamano);
                 printf("Precio: %d\n", e.key.precio);
             }
+            puts("****************************************");
         }
         fclose(binario);
     }
 }
 
 void conclas(producto Registro, int co) {
-    
+    FILE *binario; producto e;
+    int opc;
+    binario = (fopen("datos.dat", "rb"));
+    if (binario == NULL) {
+        puts("Error al abrir el archivo");
+        return;
+    }
+    else {
+        printf("Ingresa la clase que quieres consultar: \n");
+        puts("1: Paletas, 2: Nieve, 3: Agua");
+        //Esto solo sirve para el switch
+        scanf("%d", &opc);
+        switch (opc) {
+            case 1:
+                puts("*****************");
+                while (fread(&e, sizeof(producto), 1, binario)>0) {
+                    if (strcmp(e.clase, "Paleta") == 0) {
+                        printf("Tipo: %s\n", e.clase);
+                        printf("Sabor: %s\n", e.key.sabor);
+                        printf("Precio: %d\n", e.key.precio);
+                        puts("*****************");
+                    }
+                }
+                break;
+            case 2:
+                puts("*****************");
+                while (fread(&e, sizeof(producto), 1, binario)>0) {
+                    if (strcmp(e.clase, "Nieve") == 0) {
+                        printf("Tipo: %s\n", e.clase);
+                        printf("Sabor: %s\n", e.key.sabor);
+                        printf("Topping: %s\n", e.key.topping);
+                        printf("Cono: %s\n", e.key.cono);
+                        printf("Precio: %d\n", e.key.precio);
+                        puts("*****************");
+                    }
+                }
+                break;
+            case 3:
+                puts("*****************");
+                while (fread(&e, sizeof(producto), 1, binario)>0) {
+                    if (strcmp(e.clase, "Agua") == 0) {
+                        printf("Tipo: %s\n", e.clase);
+                        printf("Sabor: %s\n", e.key.sabor);
+                        printf("Tamaño: %s\n", e.key.tamano);
+                        printf("Precio: %d\n", e.key.precio);
+                        puts("*****************");
+                    }
+                }
+                break;
+            default:
+                puts("Opcion invalida");
+                break;
+        }
+    }
 }
