@@ -35,8 +35,8 @@ void consultas(producto Registro, int co);
 void conclas(producto Registro, int co);
 void ordenar(producto Registro, int co);
 ventafac(producto Registro, int co);
-//void consfact(producto Registro, int co);
-//int cancelar(producto Registro, int co);
+void consfact(producto Registro, int co);
+int cancelar(producto Registro, int co);
 // Menu principal
 int main() {
     setlocale(LC_ALL, "");
@@ -423,4 +423,97 @@ int ventafac(producto Registro, int co)
     fclose(fac);
     return 1;
     
+}
+void consfact(producto Registro, int co){
+    
+  FILE *fac; 
+  factura F;
+    fac = (fopen("facturas.dat", "rb"));
+    if (fac == NULL) {
+        printf("Error al abrir el archivo\n");
+        return;
+    }
+    else {
+        puts("****************************************");
+       
+       //lee el archivo de facturas
+        while (fread(&F, sizeof(factura), 1, fac)>0) {
+          
+          //aqui se imprime el producto, o sea la factura
+        printf("ID de la factura: %d\n", F.clave);
+        printf("Producto: %s\n", F.clase);
+        
+        if (strcmp(F.clase, "Paleta") == 0) {
+                printf("Sabor: %s\n", F.sabor);
+                printf("Precio: %d\n", F.pre);
+        }  
+        else if (strcmp(F.clase, "Nieve") == 0) {
+                printf("Sabor: %s\n", F.sabor);
+                printf("Topping: %s\n", F.top);
+                printf("Cono: %s\n", F.cono2);
+                printf("Precio: %d\n", F.pre);
+            }
+            else if (strcmp(F.clase, "Agua") == 0) {
+                printf("Sabor: %s\n", F.sabor);
+                printf("Tamaño: %s\n", F.tam);
+                printf("Precio: %d\n", F.pre);
+            }
+            printf("Cantidad: %d\n", F.cant);
+            printf("Precio unitario: $%d\n", F.pre);
+            printf("Total: $%d\n", F.total);
+            puts("****************************************");
+        }
+        fclose(fac);
+    }   
+}    
+
+int cancelar(producto Registro, int co){
+    //abres archivos
+    FILE *fac, *temporal;
+    factura F;
+    int pos=0,facturab;
+    
+    if( (fac = fopen("facturas.dat","rb"))==NULL){
+      printf("Error al abrir el archivo");
+      return 0;
+    }
+     
+    
+    temporal=fopen("t.dat","wb");
+    if (temporal == NULL) {
+        printf("Error al crear el archivo temporal\n");
+        fclose(fac);
+        return 0;
+       }
+    
+    
+    //buscas la factura que quieras borrar
+    printf("Ingresa el ID o clave de la factura que buscar para eliminar: \n ");
+    scanf("%d",&facturab);
+
+    while(fread(&F, sizeof(factura), 1, fac)>0){
+
+    if(facturab != F.clave){
+        fwrite(&F, sizeof(factura), 1, temporal); 
+        
+    }
+    //aqui se encuentra la factura 
+    else{
+        pos=1;
+        printf("Factura calve: %d eliminada\n", F.clave);
+        }
+    }        
+    //cierro archivos
+    fclose(fac);
+    fclose(temporal);
+    
+    //si no se encontro el ticket o factura
+    if(!pos)
+       printf("No se encontro la factura \n");
+    else {
+         remove("facturas.dat");
+         rename("t.dat", "facturas.dat"); 
+         return 1;
+        }
+        
 }
