@@ -13,8 +13,20 @@ typedef struct {
     int precio;
 } classe;
 typedef struct {
+    int clave;
+    char clase[50];
+    char sabor[50];
+    char top[50];
+    char cono2[50];
+    int cant;
+    int pre;
+    int total;
+    int ultimo;
+} factura;
+typedef struct {
     char clase[50];
     classe key;
+    factura F;
 } producto;
 
 // Prototipos de funciones
@@ -22,7 +34,7 @@ int altas(producto Registro, int co);
 void consultas(producto Registro, int co);
 void conclas(producto Registro, int co);
 void ordenar(producto Registro, int co);
-//int ventafac(producto Registro, int co);
+ventafac(producto Registro, int co);
 //void consfact(producto Registro, int co);
 //int cancelar(producto Registro, int co);
 // Menu principal
@@ -53,10 +65,10 @@ int main() {
             case 3:
                 ordenar(Registro, co); conclas(Registro, co);
                 break;
-            /*case 4:
+            case 4:
                 ventafac(Registro, co);
                 break;
-            case 5:
+            /*case 5:
                 consfact(Registro, co);
                 break;
             case 6:
@@ -303,4 +315,112 @@ void conclas(producto Registro, int co) {
                 break;
         }
     }
+}
+int ventafac(producto Registro, int co)
+{
+    //apertura de archivos
+   FILE *binario;
+   FILE *fac;
+   producto P;
+   factura F;
+   factura ultimo;
+   //declaracion variables
+   int opcion=0, bandera=0, a=1;
+   int cant;
+    
+   binario = fopen("datos.dat", "rb");
+   if (binario == NULL) {
+        puts("Error al abrir el archivo");
+        return 0;
+    }
+    
+    fac = fopen("facturas.dat", "ab+");
+    if (fac == NULL) {
+        puts("Error al abrir el archivo");
+        return 0;
+    }
+    
+    printf("------------Menu de productos disponibles------------");
+    
+    //abre el archivo de altas para ver las opciones
+    
+    while(fread(&P, sizeof(producto), 1, binario) >0){
+        printf("%d. %s - %s - $%d\n", a, P.clase, P.key.sabor, P.key.precio);
+        a++;
+    }
+    
+    printf("\nSeleccione el número del producto vendido: ");
+    scanf("%d", &opcion);
+    
+    rewind(binario);
+    a=1;
+    
+    //buscamos el producto elegido
+    
+    while(fread(&P, sizeof(producto), 1, binario) >0){
+        
+        if (a==opcion){
+        bandera =1;
+        break;
+        }
+        a++;
+    }
+    
+    if(!bandera){
+        printf("No se encontro el producto (ERROR)\n");
+        fclose(binario);
+        fclose(fac);
+        return 0;
+    }
+    
+    printf("Ingrese la cantidad vendida: ");
+    scanf("%d", &cant);
+    
+    //empezamos con la creacion de la factura 
+    
+    fseek(fac, 0, SEEK_END);
+    long peso = ftell(fac);
+    
+    //validacion para ver si hay una factura creada o no
+    if(peso == 0){
+       P.F.clave=1; 
+    }
+    else {
+    fseek(fac, sizeof(factura), SEEK_END);  // ir a la última factura
+    fread(&ultimo, sizeof(factura), 1, fac); // lee la última factura
+    P.F.clave = ultimo.clave + 1;                    // siguiente ID
+}
+    strcpy(P.F.clase, P.clase);
+    strcpy(P.F.sabor, P.key.sabor);
+    strcpy(P.F.top, P.key.topping);
+    strcpy(P.F.cono2, P.key.cono);
+    P.F.cant = cant;
+    P.F.pre = P.key.precio;
+    P.F.total = P.F.pre * cant;
+    
+    //guarda la factura en el archivo
+    fwrite(&P.F, sizeof(factura), 1, fac);
+    
+    //muestra la factura
+    printf("\n------- FACTURA GENERADA -------\n");
+    printf("ID Factura: %d\n", P.F.clave);
+    printf("Producto: %s\n", P.F.clase);
+    printf("Sabor: %s\n", P.F.sabor);
+
+    if (strcmp(P.F.clase, "Nieve") == 0) {
+        printf("Topping: %s\n", P.F.top);
+        printf("Cono: %s\n", P.F.cono2);
+    }
+    if (strcmp(P.F.clase, "Agua") == 0) {
+        printf("Tamaño: %s\n", P.key.tamano);
+    }
+
+    printf("Cantidad: %d\n", P.F.cant);
+    printf("Precio unitario: $%d\n", P.F.pre);
+    printf("TOTAL: $%d\n", P.F.total);
+
+    fclose(binario);
+    fclose(fac);
+    return 1;
+    
 }
