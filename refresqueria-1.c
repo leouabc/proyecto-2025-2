@@ -22,6 +22,7 @@ typedef struct {
     int pre;
     int total;
     int ultimo;
+    char tam[50]; 
 } factura;
 typedef struct {
     char clase[50];
@@ -34,7 +35,7 @@ int altas(producto Registro, int co);
 void consultas(producto Registro, int co);
 void conclas(producto Registro, int co);
 void ordenar(producto Registro, int co);
-ventafac(producto Registro, int co);
+int ventafac(producto Registro, int co);
 void consfact(producto Registro, int co);
 int cancelar(producto Registro, int co);
 // Menu principal
@@ -45,14 +46,15 @@ int main() {
     int co = 0;
     int opcion;
     do {
-        printf("\nMenu\n");
-        printf("1. Altas\n");
-        printf("2. Consulta ordenada\n");
-        printf("3: Consulta por clasificacion\n");
-        printf("4: Venta y generacion de factura\n");
-        printf("5: Consulta de facturas\n");
-        printf("6: Cancelar factura\n");
-        printf("0: Salir\n");
+        printf("\n---------------------Menu---------------------\n");
+        printf("1   || Altas\n");
+        printf("2   || Consulta ordenada\n");
+        printf("3   || Consulta por clasificacion\n");
+        printf("4   || Venta y generacion de factura\n");
+        printf("5   || Consulta de facturas\n");
+        printf("6   || Cancelar factura\n");
+        printf("0   || Salir\n");
+        puts("----------------------------------------------");
         printf("Ingrese una opcion: ");
         scanf("%d", &opcion);
         switch (opcion) {
@@ -68,14 +70,14 @@ int main() {
             case 4:
                 ventafac(Registro, co);
                 break;
-            /*case 5:
+            case 5:
                 consfact(Registro, co);
                 break;
             case 6:
                 cancelar(Registro, co);
                 break;
             default:
-                printf("Opcion invalida\n");*/
+                printf("Opcion invalida\n");
         }
     } while (opcion != 0);
     return 0;
@@ -92,7 +94,7 @@ int altas(producto Registro, int co) {
     do {
         //Dar de alta y se lleva a seleccion de sabor
         puts("Ingrese que tipo de producto quiere agregar: ");
-        puts("1: Paleta, 2: Nieve, 3: Agua ");
+        puts("|| 1: Paleta || 2: Nieve || 3: Agua ||");
         scanf("%d", &selection);
         fflush(stdin);
         //Aqui se copia el tipo de producto a la estructura
@@ -110,8 +112,7 @@ int altas(producto Registro, int co) {
         switch (selection) {
             case 1:
                 puts("Ingrese el sabor de la paleta: ");
-                puts("Ingrese 1 para ver lista de sabores:");
-                puts("Ingrese 2 para ingresar manualmente:");
+                puts("|| 1 para ver lista de sabores || 2 para ingresar manualmente ||");
                 scanf("%d", &opc2);
                 switch (opc2) {
                     case 2:
@@ -120,7 +121,8 @@ int altas(producto Registro, int co) {
                         gets(Registro.key.sabor);
                         break;
                     case 1:
-                        puts("1: Fresa, 2: Chocolate, 3: Vainilla"); //Agregar mas
+                        do {
+                        puts("|| 1: Fresa || 2: Chocolate || 3: Vainilla ||"); //Agregar mas
                         scanf("%d", &opc3);
                         switch (opc3) {
                             case 1:
@@ -132,10 +134,14 @@ int altas(producto Registro, int co) {
                             case 3:
                                 strcpy(Registro.key.sabor, "Vainilla");
                                 break;
-                        }
-                        break;
+                            default:
+                                puts("Opcion invalida");
+                                break;
+                        } 
+                    } while (opc3 != 1 && opc3 != 2 && opc3 != 3);
+                    break;
                 }
-                fflush(stdin);
+                while(getchar() != '\n');
                 puts("Ingrese el precio que se le dara: ");
                 scanf("%d", &Registro.key.precio);
                 break;
@@ -149,7 +155,6 @@ int altas(producto Registro, int co) {
                 puts("Ingrese el tipo de cono deseado: ");
                 fflush(stdin);
                 gets(Registro.key.cono);
-                puts("");
                 puts("Ingrese el precio que se le dara: ");
                 scanf("%d", &Registro.key.precio);
                 break;
@@ -169,7 +174,7 @@ int altas(producto Registro, int co) {
         co++;
         printf("\nGuardado exitoso\n");
         puts("Quieres ingresar otro articulo?");
-        puts("1: Si, 2: No");
+        puts("|| 1: Si || 2: No ||");
         scanf("%d", &opc);
     } while(opc != 2);
     fclose(binario);
@@ -236,26 +241,30 @@ void consultas(producto Registro, int co) {
         return;
     }
     else {
-        puts("****************************************");
+        puts("---------------------Menu---------------------");
+        printf("**************************\n");
         while (fread(&e, sizeof(producto), 1, binario)>0) {
-            printf("Tipo: %s\n", e.clase);
+            printf("|| Tipo: %s\n", e.clase);
             if (strcmp(e.clase, "Paleta") == 0) {
-                printf("Sabor: %s\n", e.key.sabor);
-                printf("Precio: %d\n", e.key.precio);
+                printf("|| Sabor: %s\n", e.key.sabor);
+                printf("|| Precio: %d\n", e.key.precio);
+                printf("**************************\n");
             }
             else if (strcmp(e.clase, "Nieve") == 0) {
-                printf("Sabor: %s\n", e.key.sabor);
-                printf("Topping: %s\n", e.key.topping);
-                printf("Cono: %s\n", e.key.cono);
-                printf("Precio: %d\n", e.key.precio);
+                printf("|| Sabor: %s\n", e.key.sabor);
+                printf("|| Topping: %s\n", e.key.topping);
+                printf("|| Cono: %s\n", e.key.cono);
+                printf("|| Precio: %d\n", e.key.precio);
+                printf("**************************\n");
             }
             else if (strcmp(e.clase, "Agua") == 0) {
-                printf("Sabor: %s\n", e.key.sabor);
-                printf("Tamaño: %s\n", e.key.tamano);
-                printf("Precio: %d\n", e.key.precio);
+                printf("|| Sabor: %s\n", e.key.sabor);
+                printf("|| Tamaño: %s\n", e.key.tamano);
+                printf("|| Precio: %d\n", e.key.precio);
+                printf("**************************\n");
             }
-            puts("****************************************");
         }
+        puts("---------------------------------------------");
         fclose(binario);
     }
 }
@@ -270,17 +279,18 @@ void conclas(producto Registro, int co) {
     }
     else {
         printf("Ingresa la clase que quieres consultar: \n");
-        puts("1: Paletas, 2: Nieve, 3: Agua");
+        puts("|| 1: Paletas || 2: Nieve || 3: Agua ||");
         //Esto solo sirve para el switch
         scanf("%d", &opc);
+        puts("---------------------Menu---------------------");
         switch (opc) {
             case 1:
                 puts("*****************");
                 while (fread(&e, sizeof(producto), 1, binario)>0) {
                     if (strcmp(e.clase, "Paleta") == 0) {
-                        printf("Tipo: %s\n", e.clase);
-                        printf("Sabor: %s\n", e.key.sabor);
-                        printf("Precio: %d\n", e.key.precio);
+                        printf("|| Tipo: %s\n", e.clase);
+                        printf("|| Sabor: %s\n", e.key.sabor);
+                        printf("|| Precio: %d\n", e.key.precio);
                         puts("*****************");
                     }
                 }
@@ -289,11 +299,11 @@ void conclas(producto Registro, int co) {
                 puts("*****************");
                 while (fread(&e, sizeof(producto), 1, binario)>0) {
                     if (strcmp(e.clase, "Nieve") == 0) {
-                        printf("Tipo: %s\n", e.clase);
-                        printf("Sabor: %s\n", e.key.sabor);
-                        printf("Topping: %s\n", e.key.topping);
-                        printf("Cono: %s\n", e.key.cono);
-                        printf("Precio: %d\n", e.key.precio);
+                        printf("|| Tipo: %s\n", e.clase);
+                        printf("|| Sabor: %s\n", e.key.sabor);
+                        printf("|| Topping: %s\n", e.key.topping);
+                        printf("|| Cono: %s\n", e.key.cono);
+                        printf("|| Precio: %d\n", e.key.precio);
                         puts("*****************");
                     }
                 }
@@ -302,10 +312,10 @@ void conclas(producto Registro, int co) {
                 puts("*****************");
                 while (fread(&e, sizeof(producto), 1, binario)>0) {
                     if (strcmp(e.clase, "Agua") == 0) {
-                        printf("Tipo: %s\n", e.clase);
-                        printf("Sabor: %s\n", e.key.sabor);
-                        printf("Tamaño: %s\n", e.key.tamano);
-                        printf("Precio: %d\n", e.key.precio);
+                        printf("|| Tipo: %s\n", e.clase);
+                        printf("|| Sabor: %s\n", e.key.sabor);
+                        printf("|| Tamaño: %s\n", e.key.tamano);
+                        printf("|| Precio: %d\n", e.key.precio);
                         puts("*****************");
                     }
                 }
@@ -340,16 +350,22 @@ int ventafac(producto Registro, int co)
         return 0;
     }
     
-    printf("------------Menu de productos disponibles------------");
+    printf("\n------------Menu de productos disponibles------------\n");
     
     //abre el archivo de altas para ver las opciones
     
     while(fread(&P, sizeof(producto), 1, binario) >0){
-        printf("%d. %s - %s - $%d\n", a, P.clase, P.key.sabor, P.key.precio);
-        a++;
+        if (strcasecmp(P.clase, "Paleta") == 0 || strcasecmp(P.clase, "Agua") == 0){
+            printf("|| %d. %s - %s - $%d\n", a, P.clase, P.key.sabor, P.key.precio);
+            a++;
+        }
+        else {
+            printf("|| %d. %s - %s - %s - %s - $%d\n", a, P.clase, P.key.sabor, P.key.topping, P.key.cono, P.key.precio);
+            a++;
+        }
     }
     
-    printf("\nSeleccione el número del producto vendido: ");
+    printf("\nSeleccione el numero del producto vendido: ");
     scanf("%d", &opcion);
     
     rewind(binario);
@@ -367,7 +383,7 @@ int ventafac(producto Registro, int co)
     }
     
     if(!bandera){
-        printf("No se encontro el producto (ERROR)\n");
+        printf("\nNo se encontro el producto (ERROR)\n");
         fclose(binario);
         fclose(fac);
         return 0;
@@ -384,12 +400,16 @@ int ventafac(producto Registro, int co)
     //validacion para ver si hay una factura creada o no
     if(peso == 0){
        P.F.clave=1; 
+       fseek(fac, 0, SEEK_END);
     }
+
+    //si ya hay una factura creada
     else {
-    fseek(fac, sizeof(factura), SEEK_END);  // ir a la última factura
-    fread(&ultimo, sizeof(factura), 1, fac); // lee la última factura
-    P.F.clave = ultimo.clave + 1;                    // siguiente ID
-}
+        fseek(fac, -((long)sizeof(factura)), SEEK_END);  // ir a la última factura (- para leer el ultimo digito)
+        fread(&ultimo, sizeof(factura), 1, fac); // lee la última factura
+        P.F.clave = ultimo.clave + 1;                    // siguiente ID
+    }
+    
     strcpy(P.F.clase, P.clase);
     strcpy(P.F.sabor, P.key.sabor);
     strcpy(P.F.top, P.key.topping);
@@ -403,21 +423,22 @@ int ventafac(producto Registro, int co)
     
     //muestra la factura
     printf("\n------- FACTURA GENERADA -------\n");
-    printf("ID Factura: %d\n", P.F.clave);
-    printf("Producto: %s\n", P.F.clase);
-    printf("Sabor: %s\n", P.F.sabor);
+    printf("|| ID Factura: %d\n", P.F.clave);
+    printf("|| Producto: %s\n", P.F.clase);
+    printf("|| Sabor: %s\n", P.F.sabor);
 
     if (strcmp(P.F.clase, "Nieve") == 0) {
-        printf("Topping: %s\n", P.F.top);
-        printf("Cono: %s\n", P.F.cono2);
+        printf("|| Topping: %s\n", P.F.top);
+        printf("|| Cono: %s\n", P.F.cono2);
     }
     if (strcmp(P.F.clase, "Agua") == 0) {
-        printf("Tamaño: %s\n", P.key.tamano);
+        printf("|| Tamano: %s\n", P.key.tamano);
     }
 
-    printf("Cantidad: %d\n", P.F.cant);
-    printf("Precio unitario: $%d\n", P.F.pre);
-    printf("TOTAL: $%d\n", P.F.total);
+    printf("|| Cantidad: %d\n", P.F.cant);
+    printf("|| Precio unitario: $%d\n", P.F.pre);
+    printf("|| TOTAL: $%d\n", P.F.total);
+    printf("-----------------------------\n");
 
     fclose(binario);
     fclose(fac);
@@ -425,9 +446,14 @@ int ventafac(producto Registro, int co)
     
 }
 void consfact(producto Registro, int co){
-    
-  FILE *fac; 
-  factura F;
+    FILE *binario;
+    binario = (fopen("datos.dat", "rb"));
+    if (binario == NULL) {
+        printf("Error al abrir el archivo\n");
+        return;
+    }
+    FILE *fac; 
+    factura F;
     fac = (fopen("facturas.dat", "rb"));
     if (fac == NULL) {
         printf("Error al abrir el archivo\n");
@@ -436,36 +462,39 @@ void consfact(producto Registro, int co){
     else {
         puts("****************************************");
        
-       //lee el archivo de facturas
+        //lee el archivo de facturas
         while (fread(&F, sizeof(factura), 1, fac)>0) {
           
-          //aqui se imprime el producto, o sea la factura
-        printf("ID de la factura: %d\n", F.clave);
-        printf("Producto: %s\n", F.clase);
-        
-        if (strcmp(F.clase, "Paleta") == 0) {
-                printf("Sabor: %s\n", F.sabor);
-                printf("Precio: %d\n", F.pre);
-        }  
-        else if (strcmp(F.clase, "Nieve") == 0) {
-                printf("Sabor: %s\n", F.sabor);
-                printf("Topping: %s\n", F.top);
-                printf("Cono: %s\n", F.cono2);
-                printf("Precio: %d\n", F.pre);
+            //aqui se imprime el producto, o sea la factura
+            printf("|| ID de la factura: %d\n", F.clave);
+            printf("|| Producto: %s\n", F.clase);
+            
+            if (strcmp(F.clase, "Paleta") == 0) {
+                printf("|| Sabor: %s\n", F.sabor);
+                printf("|| Precio: %d\n", F.pre);
+            }  
+            else if (strcmp(F.clase, "Nieve") == 0) {
+                printf("|| Sabor: %s\n", F.sabor);
+                printf("|| Topping: %s\n", F.top);
+                printf("|| Cono: %s\n", F.cono2);
+                printf("|| Precio: %d\n", F.pre);
             }
             else if (strcmp(F.clase, "Agua") == 0) {
-                printf("Sabor: %s\n", F.sabor);
-                printf("Tamaño: %s\n", F.tam);
-                printf("Precio: %d\n", F.pre);
+                printf("|| Sabor: %s\n", F.sabor);
+                printf("|| Tamano: %s\n", F.tam);
+                printf("|| Precio: %d\n", F.pre);
             }
-            printf("Cantidad: %d\n", F.cant);
-            printf("Precio unitario: $%d\n", F.pre);
-            printf("Total: $%d\n", F.total);
+            printf("|| Cantidad: %d\n", F.cant);
+            printf("|| Precio unitario: $%d\n", F.pre);
+            printf("|| Total: $%d\n", F.total);
             puts("****************************************");
-        }
-        fclose(fac);
-    }   
+            }
+            
+    }  
+    fclose(fac);
+    fclose(binario); 
 }    
+
 
 int cancelar(producto Registro, int co){
     //abres archivos
@@ -500,7 +529,7 @@ int cancelar(producto Registro, int co){
     //aqui se encuentra la factura 
     else{
         pos=1;
-        printf("Factura calve: %d eliminada\n", F.clave);
+        printf("Factura clave %d: eliminada exitosamente...\n", F.clave);
         }
     }        
     //cierro archivos
@@ -513,6 +542,7 @@ int cancelar(producto Registro, int co){
     else {
          remove("facturas.dat");
          rename("t.dat", "facturas.dat"); 
+         remove("t.dat");
          return 1;
         }
         
