@@ -1,7 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <locale.h>
 
 // Borrador de estructuras
 
@@ -40,7 +39,6 @@ void consfact(producto Registro, int co);
 int cancelar(producto Registro, int co);
 // Menu principal
 int main() {
-    setlocale(LC_ALL, "");
     system("color 9F");
     producto Registro;
     int co = 0;
@@ -277,13 +275,13 @@ int altas(producto Registro, int co) {
                     break;
                 }
                 fflush(stdin);
-                puts("Ingrese el tamano deseado: ");
+                printf("Ingrese el tamano deseado: ");
                 puts("|| 1 para ver lista de tamanos || 2 para ingresar manualmente ||");
                 scanf("%d", &opc2);
                 switch (opc2) {
                     case 2:
                         while(getchar() != '\n');
-                        puts("Ingresa el tamano: ");
+                        printf("Ingresa el tamano: ");
                         gets(Registro.key.tamano);
                         break;
                     case 1:
@@ -319,7 +317,7 @@ int altas(producto Registro, int co) {
         puts("Quieres ingresar otro articulo?");
         puts("|| 1: Si || 2: No ||");
         scanf("%d", &opc);
-    } while(opc != 2);
+    } while(opc == 1);
     fclose(binario);
     return co;
 }
